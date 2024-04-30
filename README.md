@@ -9,7 +9,7 @@ The MessageForwarding module for Shuttle.Esb will forward any handled messages o
 ## Configuration
 
 ```c#
-services.AddMessageForwardingModule(builder => 
+services.AddMessageForwarding(builder => 
 {
 	builder.Options.ForwardingRoutes.Add(new MessageRouteOptions
 	{
