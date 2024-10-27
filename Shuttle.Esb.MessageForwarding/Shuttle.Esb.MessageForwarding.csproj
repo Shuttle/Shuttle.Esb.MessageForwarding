@@ -1,20 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <nullable>enable</nullable>
   </PropertyGroup>
 
   <ItemGroup>
-        <None Include=".package\AssemblyInfo.cs.template" />
-        <None Include=".package\package.msbuild" />
-        <None Include=".package\package.nuspec.template" />
-        <None Include=".package\Shuttle.NuGetPackager.MSBuild.dll" />
-        <None Include=".package\Shuttle.NuGetPackager.targets" />
+    <None Include=".package\AssemblyInfo.cs.template" />
+    <None Include=".package\package.msbuild" />
+    <None Include=".package\package.nuspec.template" />
+    <None Include=".package\Shuttle.NuGetPackager.MSBuild.dll" />
+    <None Include=".package\Shuttle.NuGetPackager.targets" />
   </ItemGroup>
 
   <ItemGroup>
-        <PackageReference Include="Shuttle.Esb" Version="15.0.0" />
+    <PackageReference Include="Shuttle.Esb" Version="20.0.0" />
   </ItemGroup>
 
   <ItemGroup>
