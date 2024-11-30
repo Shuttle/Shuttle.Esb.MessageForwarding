@@ -40,6 +40,6 @@ public class MessageForwardingHostedService : IHostedService
             return;
         }
 
-        e.Pipeline.RegisterObserver(_messageForwardingObserver);
+        e.Pipeline.AddObserver(_messageForwardingObserver);
     }
 }
