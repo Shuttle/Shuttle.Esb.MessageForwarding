@@ -17,7 +17,10 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<MessageForwardingHostedService, MessageForwardingHostedService>();
         services.TryAddSingleton<MessageForwardingObserver, MessageForwardingObserver>();
 
-        services.AddSingleton(Options.Create(messageForwardingBuilder.Options));
+        services.AddOptions<MessageForwardingOptions>().Configure(options =>
+        {
+            options.ForwardingRoutes = messageForwardingBuilder.Options.ForwardingRoutes;
+        });
 
         services.AddHostedService<MessageForwardingHostedService>();
 
