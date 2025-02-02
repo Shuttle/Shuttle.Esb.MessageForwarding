@@ -5,43 +5,41 @@ using Microsoft.Extensions.Hosting;
 using Shuttle.Core.Contract;
 using Shuttle.Core.Pipelines;
 
-namespace Shuttle.Esb.MessageForwarding
+namespace Shuttle.Esb.MessageForwarding;
+
+public class MessageForwardingHostedService : IHostedService
 {
-    public class MessageForwardingHostedService : IHostedService
+    private readonly string _inboxMessagePipelineName = Guard.AgainstNull(typeof(InboxMessagePipeline).FullName);
+    private readonly MessageForwardingObserver _messageForwardingObserver;
+    private readonly IPipelineFactory _pipelineFactory;
+
+    public MessageForwardingHostedService(IPipelineFactory pipelineFactory, MessageForwardingObserver messageForwardingObserver)
     {
-        private readonly string _inboxMessagePipelineName = typeof(InboxMessagePipeline).FullName;
-        private readonly IPipelineFactory _pipelineFactory;
-        private readonly MessageForwardingObserver _messageForwardingObserver;
+        _pipelineFactory = Guard.AgainstNull(pipelineFactory);
+        _messageForwardingObserver = Guard.AgainstNull(messageForwardingObserver);
 
-        public MessageForwardingHostedService(IPipelineFactory pipelineFactory, MessageForwardingObserver messageForwardingObserver)
+        pipelineFactory.PipelineCreated += OnPipelineCreated;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await Task.CompletedTask;
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _pipelineFactory.PipelineCreated -= OnPipelineCreated;
+
+        await Task.CompletedTask;
+    }
+
+    private void OnPipelineCreated(object? sender, PipelineEventArgs e)
+    {
+        if (!(e.Pipeline.GetType().FullName ?? string.Empty).Equals(_inboxMessagePipelineName, StringComparison.InvariantCultureIgnoreCase))
         {
-            _pipelineFactory = Guard.AgainstNull(pipelineFactory, nameof(pipelineFactory));
-            _messageForwardingObserver = Guard.AgainstNull(messageForwardingObserver, nameof(messageForwardingObserver));
-
-            pipelineFactory.PipelineCreated += OnPipelineCreated;
+            return;
         }
 
-        private void OnPipelineCreated(object sender, PipelineEventArgs e)
-        {
-            if (!(e.Pipeline.GetType().FullName ?? string.Empty)
-                .Equals(_inboxMessagePipelineName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return;
-            }
-
-            e.Pipeline.RegisterObserver(_messageForwardingObserver);
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await Task.CompletedTask;
-        }
-
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            _pipelineFactory.PipelineCreated -= OnPipelineCreated;
-
-            await Task.CompletedTask;
-        }
+        e.Pipeline.AddObserver(_messageForwardingObserver);
     }
 }
